@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yahia Oughlis – Portfolio BTS SIO</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
+
+    <style>
+    /* ============================================================
+       FIX – PHOTO DE PROFIL IMMOBILE
+    ============================================================ */
+    .profile-pic,
+    .profile-pic-wrapper img {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+    }
+    .profile-pic-wrapper:hover .profile-pic,
+    .profile-pic-wrapper:hover img {
+        transform: none !important;
+    }
+
+    /* ============================================================
+       REDESIGN – SECTION PROJETS
+    ============================================================ */
+    #projets .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+        gap: 1.5rem;
+    }
+    #projets .project-card {
+        position: relative; background: #111827;
+        border: 1px solid rgba(99,179,237,0.15); border-radius: 20px;
+        padding: 2rem 1.8rem 4.5rem; overflow: hidden;
+        transition: transform 0.35s cubic-bezier(.22,.68,0,1.2), box-shadow 0.35s ease, border-color 0.35s ease;
+        cursor: default;
+    }
+    #projets .project-card::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(circle at top left, rgba(99,179,237,0.07) 0%, transparent 60%);
+        pointer-events: none;
+    }
+    #projets .project-card:hover {
+        transform: translateY(-6px) scale(1.01); border-color: rgba(99,179,237,0.4);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,179,237,0.2), 0 0 40px rgba(99,179,237,0.15);
+    }
+    #projets .project-number {
+        font-family: 'Syne', sans-serif; font-size: 5rem; font-weight: 800; line-height: 1;
+        color: rgba(99,179,237,0.07); position: absolute; top: 1rem; right: 1.2rem;
+        pointer-events: none; transition: color 0.35s ease;
+    }
+    #projets .project-card:hover .project-number { color: rgba(99,179,237,0.14); }
+    #projets .card-line {
+        width: 40px; height: 3px; background: linear-gradient(90deg, #63b3ed, #7c3aed);
+        border-radius: 2px; margin-bottom: 1rem; transition: width 0.35s ease;
+    }
+    #projets .project-card:hover .card-line { width: 70px; }
+    #projets .project-card h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.7rem; line-height: 1.3; color: #fff; }
+    #projets .project-card p { color: #94a3b8; font-size: 0.88rem; line-height: 1.65; margin-bottom: 1.2rem; }
+    #projets .tech-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    #projets .tech-tag {
+        font-size: 0.72rem; padding: 0.25rem 0.65rem; border-radius: 50px;
+        background: rgba(99,179,237,0.08); border: 1px solid rgba(99,179,237,0.2);
+        color: #63b3ed; font-weight: 500; letter-spacing: 0.02em; transition: background 0.2s, border-color 0.2s;
+    }
+    #projets .project-card:hover .tech-tag { background: rgba(99,179,237,0.14); border-color: rgba(99,179,237,0.35); }
+    .card-status {
+        position: absolute; bottom: 1.4rem; left: 1.8rem;
+        display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: #94a3b8;
+    }
+    .status-dot {
+        width: 7px; height: 7px; border-radius: 50%;
+        background: #48bb78; box-shadow: 0 0 6px #48bb78; animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+    .gallery-btn {
+        position: absolute; bottom: 1.2rem; right: 1.2rem;
+        display: flex; align-items: center; gap: 0.45rem;
+        background: linear-gradient(135deg, #63b3ed, #4299e1); color: #0b0f1a;
+        border: none; border-radius: 50px; padding: 0.5rem 1rem; font-size: 0.78rem;
+        font-weight: 700; font-family: 'Space Grotesk', sans-serif; cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s; letter-spacing: 0.02em;
+        box-shadow: 0 4px 20px rgba(99,179,237,0.3);
+    }
+    .gallery-btn i { font-size: 0.8rem; }
+    .gallery-btn:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 8px 30px rgba(99,179,237,0.5); }
+    .gallery-btn:active { transform: scale(0.97); }
+
+    /* ============================================================
+       CAROUSEL FULLSCREEN
+    ============================================================ */
+    .carousel-overlay {
+        display: none; position: fixed; inset: 0; z-index: 9999;
+        background: rgba(5, 8, 16, 0.97); backdrop-filter: blur(16px);
+        flex-direction: column; align-items: center; justify-content: center;
+    }
+    .carousel-overlay.open { display: flex; }
+    .carousel-header {
+        position: absolute; top: 0; left: 0; right: 0;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 1.2rem 2rem; background: linear-gradient(to bottom, rgba(5,8,16,0.9), transparent); z-index: 2;
+    }
+    .carousel-title-block h4 { font-family: 'Syne', sans-serif; font-size: 1rem; color: #fff; font-weight: 700; }
+    .carousel-title-block span { font-size: 0.75rem; color: #63b3ed; }
+    .carousel-close {
+        background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+        color: #fff; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+        font-size: 1rem; display: flex; align-items: center; justify-content: center;
+        transition: background 0.2s, transform 0.2s;
+    }
+    .carousel-close:hover { background: rgba(255,255,255,0.18); transform: rotate(90deg); }
+    .carousel-stage {
+        position: relative; width: 100%; flex: 1;
+        display: flex; align-items: center; justify-content: center; padding: 5rem 5rem 2rem; overflow: hidden;
+    }
+    .carousel-img-wrap {
+        position: relative; max-width: 900px; width: 100%;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .carousel-img-wrap img {
+        max-width: 100%; max-height: 65vh; border-radius: 16px; object-fit: contain;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.7); transition: opacity 0.25s ease, transform 0.25s ease;
+        user-select: none; display: block;
+    }
+    .carousel-img-wrap img.fade-out { opacity: 0; transform: scale(0.97); }
+    .carousel-arrow {
+        position: absolute; top: 50%; transform: translateY(-50%);
+        background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+        color: #fff; width: 52px; height: 52px; border-radius: 50%; cursor: pointer;
+        font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+        transition: background 0.2s, transform 0.2s, box-shadow 0.2s; z-index: 2;
+    }
+    .carousel-arrow:hover {
+        background: rgba(99,179,237,0.2); border-color: rgba(99,179,237,0.4);
+        box-shadow: 0 0 20px rgba(99,179,237,0.2); transform: translateY(-50%) scale(1.08);
+    }
+    .carousel-arrow.prev { left: 1rem; }
+    .carousel-arrow.next { right: 1rem; }
+    .carousel-arrow:disabled { opacity: 0.2; cursor: default; pointer-events: none; }
+    .carousel-counter {
+        position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%);
+        font-size: 0.8rem; color: #94a3b8; letter-spacing: 0.08em;
+        font-family: 'Space Grotesk', sans-serif; white-space: nowrap;
+    }
+    .carousel-thumbs {
+        width: 100%; display: flex; align-items: center; justify-content: center;
+        gap: 0.6rem; padding: 0.8rem 2rem 1.5rem; overflow-x: auto;
+        background: linear-gradient(to top, rgba(5,8,16,0.9), transparent); scrollbar-width: none;
+    }
+    .carousel-thumbs::-webkit-scrollbar { display: none; }
+    .carousel-thumb {
+        width: 64px; height: 46px; border-radius: 8px; overflow: hidden; cursor: pointer;
+        border: 2px solid transparent; flex-shrink: 0;
+        transition: border-color 0.2s, transform 0.2s, opacity 0.2s; opacity: 0.45;
+    }
+    .carousel-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .carousel-thumb.active { border-color: #63b3ed; opacity: 1; transform: scale(1.1); }
+    .carousel-thumb:hover { opacity: 0.8; }
+    .carousel-empty {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 1rem; color: #94a3b8; text-align: center; padding: 2rem;
+    }
+    .carousel-empty i { font-size: 3rem; color: rgba(99,179,237,0.2); }
+    .carousel-empty p { font-size: 0.9rem; line-height: 1.6; max-width: 320px; }
+    @media (max-width: 600px) {
+        .carousel-stage { padding: 5rem 1rem 1rem; }
+        .carousel-arrow { width: 40px; height: 40px; font-size: 0.9rem; }
+        .carousel-arrow.prev { left: 0.3rem; }
+        .carousel-arrow.next { right: 0.3rem; }
+    }
+
+    /* ============================================================
+       STAGE PANEL – PLEIN ÉCRAN (nouvelle page)
+    ============================================================ */
+    .stage-panel-backdrop {
+        display: none;
+    }
+
+    .stage-panel {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 9995;
+        background: #0b0f1a;
+        transform: translateY(100%);
+        transition: transform 0.55s cubic-bezier(0.22, 0.68, 0, 1.08);
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(99,179,237,0.2) transparent;
+        display: none;
+        flex-direction: column;
+    }
+    .stage-panel::-webkit-scrollbar { width: 4px; }
+    .stage-panel::-webkit-scrollbar-track { background: transparent; }
+    .stage-panel::-webkit-scrollbar-thumb { background: rgba(99,179,237,0.2); border-radius: 2px; }
+
+    .stage-panel.open {
+        display: flex;
+        transform: translateY(0);
+    }
+
+    /* ── Barre de navigation sticky ── */
+    .sp-topbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 2rem;
+        background: rgba(11, 15, 26, 0.94);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(99,179,237,0.1);
+        gap: 1rem;
+    }
+
+    .sp-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #e2e8f0;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.83rem;
+        font-weight: 600;
+        padding: 0.5rem 1.1rem 0.5rem 0.85rem;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+        letter-spacing: 0.01em;
+        white-space: nowrap;
+    }
+    .sp-back-btn i { font-size: 0.78rem; transition: transform 0.25s; }
+    .sp-back-btn:hover {
+        background: rgba(99,179,237,0.1);
+        border-color: rgba(99,179,237,0.35);
+        color: #63b3ed;
+    }
+    .sp-back-btn:hover i { transform: translateX(-4px); }
+
+    .sp-topbar-label {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.75rem;
+        color: #475569;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .sp-close-btn {
+        width: 38px; height: 38px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #94a3b8;
+        font-size: 1rem;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.3s;
+        flex-shrink: 0;
+    }
+    .sp-close-btn:hover {
+        background: rgba(239, 68, 68, 0.12);
+        border-color: rgba(239, 68, 68, 0.4);
+        color: #f87171;
+        transform: rotate(90deg);
+    }
+
+    /* ── Hero RECENTRÉ ── */
+    .sp-hero {
+        padding: 4rem 2rem 3rem;
+        background: linear-gradient(160deg, rgba(99,179,237,0.07) 0%, rgba(124,58,237,0.04) 60%, transparent 100%);
+        border-bottom: 1px solid rgba(99,179,237,0.1);
+        position: relative;
+        overflow: hidden;
+
+        /* CENTRÉ */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .sp-hero::before {
+        content: '';
+        position: absolute;
+        width: 700px; height: 700px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99,179,237,0.08) 0%, transparent 65%);
+        top: -200px; left: 50%; transform: translateX(-50%);
+        pointer-events: none;
+    }
+    
+    .sp-icon {
+        width: 68px; height: 68px;
+        background: linear-gradient(135deg, #63b3ed, #4299e1);
+        border-radius: 20px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem; color: #0b0f1a;
+        margin-bottom: 1.6rem;
+        box-shadow: 0 14px 38px rgba(99,179,237,0.35);
+    }
+    .sp-hero h2 {
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(1.4rem, 4vw, 2rem);
+        font-weight: 800;
+        color: #fff;
+        line-height: 1.25;
+        margin-bottom: 1.4rem;
+        max-width: 600px;
+    }
+    .sp-meta {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem 1.8rem;
+    }
+    .sp-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.84rem;
+        color: #94a3b8;
+    }
+    .sp-meta-item i {
+        color: #63b3ed;
+        font-size: 0.78rem;
+        width: 14px;
+        text-align: center;
+    }
+
+    /* ── Corps ── */
+    .sp-body {
+        padding: 3rem 10vw 6rem;
+        flex: 1;
+        max-width: 900px;
+        margin: 0 auto;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .sp-section-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #63b3ed;
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 1.2rem;
+        margin-top: 2.2rem;
+        padding-bottom: 0.65rem;
+        border-bottom: 1px solid rgba(99,179,237,0.1);
+    }
+    .sp-section-title:first-child { margin-top: 0; }
+    .sp-section-title i { font-size: 0.82rem; }
+
+    .sp-body > p:not(.sp-section-title) {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        line-height: 1.75;
+        margin-bottom: 1.2rem;
+    }
+    .sp-body ul {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        padding-left: 0;
+        list-style: none;
+        margin-bottom: 1.5rem;
+    }
+    .sp-body li {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+        color: #94a3b8;
+        font-size: 0.88rem;
+        line-height: 1.65;
+        padding: 0.9rem 1rem;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 12px;
+        transition: border-color 0.2s, background 0.2s;
+    }
+    .sp-body li:hover {
+        background: rgba(99,179,237,0.04);
+        border-color: rgba(99,179,237,0.18);
+    }
+    .sp-body li::before {
+        content: '';
+        width: 5px; height: 5px;
+        background: #63b3ed;
+        border-radius: 50%;
+        flex-shrink: 0;
+        margin-top: 0.58rem;
+    }
+    .sp-body li strong { color: #e2e8f0; }
+
+    /* ── Étapes numérotées ── */
+    .sp-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .sp-step {
+        display: flex;
+        gap: 1.2rem;
+        align-items: flex-start;
+        padding: 1.2rem 1.4rem;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 16px;
+        transition: border-color 0.2s, background 0.2s;
+    }
+    .sp-step:hover {
+        background: rgba(99,179,237,0.04);
+        border-color: rgba(99,179,237,0.2);
+    }
+    .sp-step-num {
+        min-width: 36px; height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(99,179,237,0.18), rgba(66,153,225,0.12));
+        border: 1px solid rgba(99,179,237,0.3);
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 800;
+        color: #63b3ed;
+        flex-shrink: 0;
+    }
+    .sp-step-content { flex: 1; }
+    .sp-step-content strong {
+        display: block;
+        color: #e2e8f0;
+        font-size: 0.9rem;
+        margin-bottom: 0.35rem;
+        font-weight: 600;
+    }
+    .sp-step-content p {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        line-height: 1.65;
+        margin: 0;
+    }
+
+    /* ── Conclusion box ── */
+    .sp-conclusion {
+        margin-top: 1rem;
+        padding: 1.4rem 1.6rem;
+        background: linear-gradient(135deg, rgba(99,179,237,0.06), rgba(124,58,237,0.04));
+        border: 1px solid rgba(99,179,237,0.2);
+        border-radius: 16px;
+        color: #94a3b8;
+        font-size: 0.88rem;
+        line-height: 1.75;
+    }
+    .sp-conclusion strong { color: #e2e8f0; }
+
+    .sp-tech-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin: 0.4rem 0 1.5rem;
+    }
+    .sp-tech-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        background: rgba(99,179,237,0.06);
+        border: 1px solid rgba(99,179,237,0.2);
+        color: #63b3ed;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 0.4rem 0.9rem;
+        border-radius: 50px;
+        transition: background 0.2s, border-color 0.2s;
+    }
+    .sp-tech-badge:hover { background: rgba(99,179,237,0.12); border-color: rgba(99,179,237,0.4); }
+    .sp-tech-badge i { font-size: 0.85rem; }
+
+    .sp-download-area {
+        margin-top: 2.5rem;
+        padding-top: 1.8rem;
+        border-top: 1px solid rgba(99,179,237,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .sp-dl-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: linear-gradient(135deg, #63b3ed, #4299e1);
+        color: #0b0f1a;
+        border: none;
+        border-radius: 50px;
+        padding: 0.85rem 2.2rem;
+        font-size: 0.88rem;
+        font-weight: 700;
+        font-family: 'Space Grotesk', sans-serif;
+        cursor: pointer;
+        text-decoration: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 6px 24px rgba(99,179,237,0.3);
+        letter-spacing: 0.02em;
+    }
+    .sp-dl-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(99,179,237,0.5); }
+
+    @media (max-width: 768px) {
+        .sp-hero { padding: 2.5rem 1.2rem 2rem; }
+        .sp-body { padding: 2rem 1.2rem 4rem; }
+        .sp-topbar { padding: 0.85rem 1rem; }
+        .sp-topbar-label { display: none; }
+        .sp-hero h2 { font-size: 1.3rem; }
+    }
+
+    /* ============================================================
+       VEILLE TECHNOLOGIQUE
+    ============================================================ */
+    .veille-intro {
+        max-width: 760px; margin: 0 auto 3.5rem; text-align: center;
+    }
+    .veille-intro p { color: #94a3b8; font-size: 0.95rem; line-height: 1.8; }
+    .veille-intro strong { color: #e2e8f0; }
+
+    .veille-articles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+        gap: 1.3rem;
+        margin-bottom: 3.5rem;
+    }
+    .veille-article-card {
+        position: relative; background: #111827;
+        border: 1px solid rgba(99,179,237,0.13); border-radius: 20px;
+        padding: 1.8rem 1.8rem 1.6rem; overflow: hidden;
+        text-decoration: none; display: flex; flex-direction: column;
+        transition: transform 0.3s cubic-bezier(.22,.68,0,1.2), box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .veille-article-card::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(circle at top right, rgba(99,179,237,0.05) 0%, transparent 60%);
+        pointer-events: none;
+    }
+    .veille-article-card::after {
+        content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+        background: linear-gradient(to bottom, #63b3ed, #7c3aed); border-radius: 3px 0 0 3px;
+        opacity: 0; transition: opacity 0.3s ease;
+    }
+    .veille-article-card:hover {
+        transform: translateY(-5px); border-color: rgba(99,179,237,0.35);
+        box-shadow: 0 16px 50px rgba(0,0,0,0.45), 0 0 0 1px rgba(99,179,237,0.15);
+    }
+    .veille-article-card:hover::after { opacity: 1; }
+    .veille-article-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .veille-article-date { font-size: 0.7rem; font-weight: 700; color: #63b3ed; font-family: 'Space Grotesk', sans-serif; letter-spacing: 0.06em; text-transform: uppercase; }
+    .veille-article-source { font-size: 0.68rem; color: #475569; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); padding: 0.15rem 0.55rem; border-radius: 50px; }
+    .veille-article-card h4 { font-family: 'Syne', sans-serif; font-size: 0.97rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.65rem; line-height: 1.4; flex: 1; }
+    .veille-article-card p { font-size: 0.82rem; color: #64748b; line-height: 1.65; margin-bottom: 1.2rem; }
+    .veille-article-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+    .veille-article-link { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.74rem; font-weight: 600; color: #63b3ed; transition: gap 0.2s; }
+    .veille-article-link i { font-size: 0.62rem; transition: transform 0.2s; }
+    .veille-article-card:hover .veille-article-link { gap: 0.65rem; }
+    .veille-article-card:hover .veille-article-link i { transform: translateX(3px); }
+    .veille-article-num { font-family: 'Syne', sans-serif; font-size: 3.5rem; font-weight: 800; line-height: 1; color: rgba(99,179,237,0.06); position: absolute; bottom: 0.8rem; right: 1.2rem; pointer-events: none; transition: color 0.3s ease; }
+    .veille-article-card:hover .veille-article-num { color: rgba(99,179,237,0.12); }
+
+    .veille-tools { border-top: 1px solid rgba(99,179,237,0.1); padding-top: 2.5rem; text-align: center; }
+    .veille-tools h4 { font-family: 'Syne', sans-serif; font-size: 0.9rem; color: #63b3ed; display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem; letter-spacing: 0.05em; text-transform: uppercase; }
+    .veille-tools-list { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.75rem; }
+    .veille-tool { display: flex; align-items: center; gap: 0.5rem; background: rgba(99,179,237,0.05); border: 1px solid rgba(99,179,237,0.15); border-radius: 50px; padding: 0.45rem 1.1rem; font-size: 0.82rem; color: #94a3b8; transition: background 0.2s, border-color 0.2s, color 0.2s; }
+    .veille-tool i { color: #63b3ed; font-size: 0.85rem; }
+    .veille-tool:hover { background: rgba(99,179,237,0.12); border-color: rgba(99,179,237,0.3); color: #e2e8f0; }
+
+    .certif-row-bottom .certif-card { max-width: 540px; width: 100%; }
+    .certif-row { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; width: 100%; }
+
+    /* Bouton du panel aligné sur le style de la grille projets */
+.sp-gallery-trigger {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.sp-inner-gallery-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: linear-gradient(135deg, #63b3ed, #4299e1);
+    color: #0b0f1a;
+    border: none;
+    border-radius: 50px;
+    padding: 0.5rem 1.2rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.02em;
+    box-shadow: 0 4px 20px rgba(99,179,237,0.3);
+}
+
+.sp-inner-gallery-btn i {
+    font-size: 0.8rem;
+}
+
+.sp-inner-gallery-btn:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 8px 30px rgba(99,179,237,0.5);
+}
+
+.sp-inner-gallery-btn:active {
+    transform: scale(0.97);
+}
+    </style>
+</head>
+<body>
+
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="logo">Y<span>.</span>O</div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#accueil" class="active">Accueil</a></li>
+                <li><a href="#bts">Formation</a></li>
+                <li><a href="#parcours">Parcours</a></li>
+                <li><a href="#skills">Compétences</a></li>
+                <li><a href="#projets">Projets</a></li>
+                <li><a href="#veille">Veille</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section id="accueil">
+        <canvas id="heroCanvas"></canvas>
+        <div class="container">
+            <div class="hero-content">
+                <div class="profile-pic-wrapper">
+                    <img src="photos/Yahia.PNG" alt="Yahia Oughlis" class="profile-pic">
+                    <div class="profile-ring"></div>
+                </div>
+                <h1 class="reveal-up" style="--delay:0.4s">Yahia<br>OUGHLIS</h1>
+                <p class="subtitle reveal-up" style="--delay:0.6s">Étudiant BTS SIO <span class="accent">option SLAM</span></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- À PROPOS -->
+    <section id="apropos">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-text-col reveal-right">
+                    <span class="about-tag">À propos de moi</span>
+                    <h2 class="about-heading">Passionné par le <span>développement</span>, curieux par nature.</h2>
+                    <p>Je m'appelle <strong>Yahia Oughlis</strong>, j'ai 19 ans et je suis étudiant en 2ème année de BTS SIO option SLAM au Lycée Polyvalent de Cachan.<br> Passionné par l'informatique depuis longtemps j'ai toujours voulu m'y consacrer plus sérieusement</p>
+                    <p>J'apprends le développement web et logiciel au quotidien en travaillant sur des projets concrets et qui me permettent de maîtriser des langages comme PHP, Python, C# et des frameworks comme Laravel. J'apprécie particulièrement la résolution de problèmes et la conception de solutions.</p>
+                    <p>En dehors du code, je suis quelqu'un de sérieux, organisé et toujours prêt à apprendre.</p>
+                    <a href="#contact" class="btn btn-primary" style="margin-top: 1.5rem;"><span>Me contacter</span><i class="fas fa-arrow-right"></i></a>
+                    <a href="CV/Yahia_Oughlis_CV.pdf" class="btn btn-ghost" target="_blank"><span>Mon CV</span><i class="fas fa-download"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BTS SIO -->
+    <section id="bts">
+        <div class="container">
+            <h2 class="section-title reveal-up">Le <span>BTS SIO</span></h2>
+            <p class="section-subtitle reveal-up">Services Informatiques aux Organisations</p>
+            <div class="bts-intro reveal-up">
+                <p>Le BTS SIO est un diplôme de niveau Bac+2 qui forme aux métiers de l'informatique en entreprise. Il prépare à concevoir, déployer, exploiter et sécuriser des solutions informatiques répondant aux besoins des organisations, qu'elles soient publiques ou privées.</p>
+            </div>
+            <div class="bts-option-row reveal-up">
+                <div class="bts-option-text">
+                    <span class="bts-badge bts-badge-slam">SLAM</span>
+                    <span class="bts-mine-tag"><i class="fas fa-check-circle"></i> Mon option</span>
+                    <h3>Solutions Logicielles et Applications Métiers</h3>
+                    <p>Cette option forme aux bases de la programmation logicielle et du développement web.</p>
+                    <p class="debouches-label">Débouchés professionnels</p>
+                    <ul class="bts-debouches-list">
+                        <li>Programmeur analyste</li><li>Développeur d'applications web</li>
+                        <li>Développeur d'application mobile</li><li>Webmaster</li>
+                    </ul>
+                    <div class="option-skills"><span>PHP</span><span>Python</span><span>C#</span><span>MySQL</span><span>Laravel</span></div>
+                </div>
+                <div class="bts-option-img"><img src="photos/photoSlam.jpg" alt="Code SLAM"></div>
+            </div>
+            <div class="bts-option-row bts-option-row-rev reveal-up">
+                <div class="bts-option-img"><img src="photos/photoSisr.jpg" alt="Réseau SISR"></div>
+                <div class="bts-option-text">
+                    <span class="bts-badge bts-badge-sisr">SISR</span>
+                    <h3>Solutions d'Infrastructure, Systèmes et Réseaux</h3>
+                    <p>Cette option forme à la mise en place et la maintenance des infrastructures réseaux.</p>
+                    <p class="debouches-label">Débouchés professionnels</p>
+                    <ul class="bts-debouches-list">
+                        <li>Administrateur systèmes et réseaux</li><li>Technicien réseaux et télécoms</li>
+                        <li>Technicien de maintenance</li><li>Gestionnaire du parc informatique</li>
+                    </ul>
+                    <div class="option-skills"><span>Linux</span><span>Cisco</span><span>Active Directory</span><span>GLPI</span></div>
+                </div>
+            </div>
+            <div class="bts-stats reveal-up">
+                <div class="stat-card"><div class="stat-number">2</div><div class="stat-label">ans de formation</div></div>
+                <div class="stat-card"><div class="stat-number">2</div><div class="stat-label">stages réalisés</div></div>
+                <div class="stat-card"><div class="stat-number">3</div><div class="stat-label">Missions/Projets</div></div>
+                <div class="stat-card"><div class="stat-number">+10</div><div class="stat-label">technos maîtrisées</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PARCOURS -->
+    <section id="parcours">
+        <div class="container">
+            <h2 class="section-title reveal-up">Mon <span>Parcours scolaire</span></h2>
+            <div class="timeline">
+                <div class="timeline-item reveal-right">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">2021</span>
+                        <h3>Brevet des collèges</h3>
+                        <p><strong>Collège Victor Hugo à Cachan</strong></p>
+                        <p>Obtention du Brevet des collèges.</p>
+                    </div>
+                </div>
+                <div class="timeline-item reveal-left">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">2024</span>
+                        <h3>Baccalauréat Technologique – STI2D</h3>
+                        <p><strong>Lycée Polyvalent de Cachan</strong></p>
+                        <p>Obtention du Bac technologique STI2D option SIN.</p>
+                    </div>
+                </div>
+                <div class="timeline-item reveal-right">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">2024 – 2026</span>
+                        <h3>BTS SIO option SLAM</h3>
+                        <p><strong>Lycée Polyvalent de Cachan</strong></p>
+                        <p>Formation en cours en BTS SIO option SLAM.</p>
+                    </div>
+                </div>
+                <div class="timeline-item reveal-left">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">2026 et au-delà</span>
+                        <h3>Perspectives d'avenir</h3>
+                        <p>Licence en informatique</p>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title reveal-up" style="margin-top: 5rem;">Mon <span>Parcours professionnel</span></h2>
+            <div class="stages-grid">
+                <div class="stage-card reveal-up" style="--delay:0.1s" onclick="openStageModal('stage1')">
+                    <div class="stage-icon"><i class="fas fa-briefcase"></i></div>
+                    <h3>Stage en première année de BTS SIO</h3>
+                    <p class="stage-company">Hôpital Rothschild AP-HP</p>
+                    <p class="stage-date"><i class="far fa-calendar-alt"></i> Mai – Juin 2025</p>
+                    <span class="see-more">Voir plus <i class="fas fa-arrow-right"></i></span>
+                </div>
+                <div class="stage-card reveal-up" style="--delay:0.2s" onclick="openStageModal('stage2')">
+                    <div class="stage-icon"><i class="fas fa-code"></i></div>
+                    <h3>Stage de deuxième année en BTS SIO</h3>
+                    <p class="stage-company">Agence de voyage Ikbal Travel Services</p>
+                    <p class="stage-date"><i class="far fa-calendar-alt"></i> Janvier – Février 2026</p>
+                    <span class="see-more">Voir plus <i class="fas fa-arrow-right"></i></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills" class="container">
+        <h2 class="section-title reveal-up">Mes <span>Compétences</span></h2>
+        <div class="slider">
+            <div class="slide-track">
+                <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML5" width="80"><span>HTML5</span></div>
+                <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" alt="CSS3" width="80"><span>CSS3</span></div>
+                <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" alt="PHP" width="80"><span>PHP</span></div>
+                <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" alt="C#" width="80"><span>C#</span></div>
+                <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg" alt="Laravel" width="80"><span>Laravel</span></div>
+                <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" width="80"><span>Python</span></div>
+                <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" alt="MySQL" width="80"><span>MySQL</span></div>
+                <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg" alt="Linux" width="80"><span>Linux</span></div>
+                <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML5" width="80"><span>HTML5</span></div>
+                <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" alt="CSS3" width="80"><span>CSS3</span></div>
+                <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" alt="PHP" width="80"><span>PHP</span></div>
+                <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" alt="C#" width="80"><span>C#</span></div>
+                <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg" alt="Laravel" width="80"><span>Laravel</span></div>
+                <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" width="80"><span>Python</span></div>
+                <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" alt="MySQL" width="80"><span>MySQL</span></div>
+                <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg" alt="Linux" width="80"><span>Linux</span></div>     
+            </div>
+        </div>
+
+        <div class="slider">
+           <div class="slide-track">
+        <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt="VS Code" width="80"><span>VS Code</span></div>
+        <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visualstudio/visualstudio-plain.svg" alt="VS 2022" width="80"><span>VS 2022</span></div>
+        <div class="slide"><img src="fichiers/laragon.svg" alt="Laragon" width="80"><span>Laragon</span></div>
+        <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub" width="80"><span>GitHub</span></div>
+        <div class="slide"><img src="https://www.vectorlogo.zone/logos/virtualbox/virtualbox-icon.svg" alt="VirtualBox" width="80"><span>VirtualBox</span></div>
+        
+        <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt="VS Code" width="80"><span>VS Code</span></div>
+        <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visualstudio/visualstudio-plain.svg" alt="VS 2022" width="80"><span>VS 2022</span></div>
+        <div class="slide"><img src="fichiers/laragon.svg" alt="Laragon" width="80"><span>Laragon</span></div>
+        <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub" width="80"><span>GitHub</span></div>
+        <div class="slide"><img src="https://www.vectorlogo.zone/logos/virtualbox/virtualbox-icon.svg" alt="VirtualBox" width="80"><span>VirtualBox</span></div>
+        
+        <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt="VS Code" width="80"><span>VS Code</span></div>
+        <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visualstudio/visualstudio-plain.svg" alt="VS 2022" width="80"><span>VS 2022</span></div>
+        <div class="slide"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/laragon.png" alt="Laragon" width="80"><span>Laragon</span></div>
+        <div class="slide"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub" width="80"><span>GitHub</span></div>
+        <div class="slide"><img src="https://www.vectorlogo.zone/logos/virtualbox/virtualbox-icon.svg" alt="VirtualBox" width="80"><span>VirtualBox</span></div>
+    </div>
+        </div>
+
+
+
+
+        <h3 class="sub-title reveal-up" style="margin-top: 4rem; margin-bottom: 2rem;">Certifications</h3>
+        <div class="certif-grid">
+            <div class="certif-card zoomable reveal-left">
+                <div class="certif-overlay"><i class="fas fa-search-plus"></i></div>
+                <img src="photos/CertificationPython.jpg" alt="Certification Python"><p>Openclassroom Python</p>
+            </div>
+            <div class="certif-card zoomable reveal-right">
+                <div class="certif-overlay"><i class="fas fa-search-plus"></i></div>
+                <img src="photos/certification-pix.jpg" alt="Certification PIX"><p>PIX</p>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- PROJETS -->
+    <section id="projets">
+        <div class="container">
+            <h2 class="section-title reveal-up">Mes <span>Projets</span></h2>
+            <div class="projects-grid">
+                <div class="project-card reveal-up" style="--delay:0.1s">
+                    <div class="project-number">01</div><div class="card-line"></div>
+                    <h3>Site E-Commerce</h3>
+                    <p>Développement complet d'une boutique en ligne de vente de confiserie avec panier, et back-office administrateur.</p>
+                    <div class="tech-tags"><span class="tech-tag">PHP</span><span class="tech-tag">MySQL</span><span class="tech-tag">HTML</span><span class="tech-tag">CSS</span></div>
+                    <div class="card-status"><span class="status-dot"></span><span>Terminé</span></div>
+                    <button class="gallery-btn" onclick="openCarousel('projet1')"><i class="fas fa-images"></i> Voir les photos</button>
+                </div>
+                <div class="project-card reveal-up" style="--delay:0.2s">
+                    <div class="project-number">02</div><div class="card-line"></div>
+                    <h3>Site web intranet</h3>
+                    <p>Développement d'un site web intranet permettant l'administration et la gestion des données stockées dans la base de données.</p>
+                    <div class="tech-tags"><span class="tech-tag">PHP</span><span class="tech-tag">HTML</span><span class="tech-tag">CSS</span><span class="tech-tag">Laravel</span><span class="tech-tag">MySQL</span></div>
+                    <div class="card-status"><span class="status-dot"></span><span>Terminé</span></div>
+                    <button class="gallery-btn" onclick="openCarousel('projet2')"><i class="fas fa-images"></i> Voir les photos</button>
+                </div>
+                <div class="project-card reveal-up" style="--delay:0.4s">
+                    <div class="project-number">03</div><div class="card-line"></div>
+                    <h3>Interface Graphique en C#</h3>
+                    <p>Développement d'une interface graphique en C# permettant de visualiser, ajouter, modifier et supprimer des données dans une base de données.</p>
+                    <div class="tech-tags"><span class="tech-tag">C#</span><span class="tech-tag">Visual Studio 2022</span><span class="tech-tag">MySQL</span></div>
+                    <div class="card-status"><span class="status-dot"></span><span>Terminé</span></div>
+                    <button class="gallery-btn" onclick="openCarousel('projet4')"><i class="fas fa-images"></i> Voir les photos</button>
+                </div>
+                <div class="project-card reveal-up" style="--delay:0.5s">
+                    <div class="project-number">04</div><div class="card-line"></div>
+                    <h3>Projet Mobile Bibliothèque</h3>
+                    <p>Développement d'une application mobile représentant une bibliothèque.</p>
+                    <div class="tech-tags"><span class="tech-tag">C#</span><span class="tech-tag">Visual Studio 2022</span><span class="tech-tag">APi web</span></div>
+                    <div class="card-status"><span class="status-dot"></span><span>Terminé</span></div>
+                    <button class="gallery-btn" onclick="openCarousel('projet5')"><i class="fas fa-images"></i> Voir les photos</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VEILLE -->
+    <section id="veille">
+        <div class="container">
+            <h2 class="section-title reveal-up">Veille <span>Technologique</span></h2>
+            <p class="section-subtitle reveal-up">L'IA omniprésente : quand l'assistant vocal devient un copilote intégré au cœur de nos outils.</p>
+
+            <div class="veille-intro reveal-up">
+                <p>Cette veille explore un phénomène qui se propage de plus en plus : l'intelligence artificielle ne se lance plus, elle est <strong>déjà là</strong>, intégrée directement dans les applications et appareils que nous utilisons chaque jour. Depuis peu, les Géants de l'industries ont tous opéré le même basculement — faire de l'IA un<strong> copilote omniprésent dans notre quotidien.</strong>.</p>
+            </div>
+
+            <div class="veille-articles-grid reveal-up">
+                <a class="veille-article-card" href="https://aujourdhui.ma/emploi/plus-quun-outil-doptimisation-lia-devient-un-copilote-du-travail-humain" target="_blank">
+                    <div class="veille-article-num">01</div>
+                    <div class="veille-article-top">
+                        <span class="veille-article-date">Janvier 2026</span>
+                        <span class="veille-article-source">Aujourd'hui.ma</span>
+                    </div>
+                    <h4>Plus qu’un outil d’optimisation, l’IA devient un copilote du travail humain </h4>
+                    <p></p>
+                    <div class="veille-article-footer">
+                        <span class="veille-article-link">Lire l'article <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+                <a class="veille-article-card" href="https://leclaireur.fnac.com/article/cp63643-avec-apple-intelligence-apple-fait-son-grand-saut-dans-lia/" target="_blank">
+                    <div class="veille-article-num">02</div>
+                    <div class="veille-article-top">
+                        <span class="veille-article-date">fevrier 2025</span>
+                        <span class="veille-article-source">L'Eclaireur</span>
+                    </div>
+                    <h4>Apple et l'IA : un grand saut dans l'intelligence artificielle</h4>
+                    <div class="veille-article-footer">
+                        <span class="veille-article-link">Lire l'article <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+                <a class="veille-article-card" href="https://news.samsung.com/fr/first-look-ces-2026" target="_blank">
+                    <div class="veille-article-num">03</div>
+                    <div class="veille-article-top">
+                        <span class="veille-article-date">Janvier 2026</span>
+                        <span class="veille-article-source">Samsung Newsroom FR</span>
+                    </div>
+                    <h4>CES 2026 : Samsung intègre l'IA à vie dans vos appareils du quotidien</h4>
+                    <div class="veille-article-footer">
+                        <span class="veille-article-link">Lire l'article <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+                <a class="veille-article-card" href="https://lautomobiliste.fr/16/03/2026/google-maps-mise-a-jour-gemini/" target="_blank">
+                    <div class="veille-article-num">04</div>
+                    <div class="veille-article-top">
+                        <span class="veille-article-date">16 Mars 2026</span>
+                        <span class="veille-article-source">L'Automobiliste</span>
+                    </div>
+                    <h4>Google Maps : la plus grande mise à jour en 10 ans, propulsée par Gemini</h4>
+                    <div class="veille-article-footer">
+                        <span class="veille-article-link">Lire l'article <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+                <a class="veille-article-card" href="https://www.francebleu.fr/bretagne/ille-et-vilaine-35/rennes/a-rennes-un-distributeur-automatique-choisit-votre-soda-prefere-grace-a-l-intelligence-artificielle-2615999" target="_blank">
+                    <div class="veille-article-num">05</div>
+                    <div class="veille-article-top">
+                        <span class="veille-article-date">7 Octobre 2025</span>
+                        <span class="veille-article-source">France Bleu</span>
+                    </div>
+                    <h4>A Rennes, un distributeur automatique choisit votre soda préféré grâce à l'intelligence artificielle</h4>
+                    <div class="veille-article-footer">
+                        <span class="veille-article-link">Lire l'article <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="veille-tools reveal-up">
+                <h4><i class="fas fa-tools"></i> Outils utilisés pour cette veille</h4>
+                <div class="veille-tools-list">
+                    <div class="veille-tool"><i class="fab fa-google"></i><span>Google Alertes</span></div>
+                    <div class="veille-tool"><i class="fas fa-rss"></i><span>Feedly</span></div>
+                    <div class="veille-tool"><i class="fab fa-reddit"></i><span>Reddit</span></div>
+                    <div class="veille-tool"><i class="fab fa-twitter"></i><span>X / Twitter</span></div>
+                    <div class="veille-tool"><i class="fas fa-link"></i><span>Make.com</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+        <div class="container">
+            <div class="contact-content">
+                <h2 class="section-title reveal-up">Me <span>Contacter</span></h2>
+                <div class="contact-card reveal-up">
+                    <p>Je suis disponible pour toutes informations !</p>
+                    <div class="contact-info">
+                        <a href="mailto:yahiaough@gmail.com"><i class="fas fa-envelope"></i><span>yahiaough@gmail.com</span></a>
+                    </div>
+                    <div class="social-links">
+                        <a href="https://www.linkedin.com/in/yahia-oughlis-8b7b222a0/" target="_blank" class="social-btn"><i class="fab fa-linkedin"></i><span>LinkedIn</span></a>
+                        <a href="https://github.com/Yahiaefir" target="_blank" class="social-btn"><i class="fab fa-github"></i><span>GitHub</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer><div class="container"><p>© 2026 Yahia Oughlis – Tous droits réservés.</p></div></footer>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <img id="lightbox-img" src="" alt="Zoom">
+    </div>
+
+    <!-- ============================================================
+         STAGE PANELS – PLEIN ÉCRAN
+    ============================================================ -->
+
+    <div class="stage-panel-backdrop" id="stagePanelBackdrop"></div>
+
+    <!-- PANEL STAGE 1 – AP-HP -->
+    <div class="stage-panel" id="stagePanel1" role="dialog" aria-modal="true" aria-label="Stage AP-HP">
+    <div class="sp-topbar">
+        <button class="sp-close-btn" onclick="closeStagePanel('stagePanel1')" aria-label="Fermer">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <div class="sp-body" style="padding-top: 3rem; display: flex; flex-direction: column; align-items: center; text-align: center;">
+        
+        <h2 style="font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; color: #fff; margin-bottom: 1rem; margin-top: 0; line-height: 1.2;">
+            Stage de première année<br>BTS SIO option SLAM
+        </h2>
+
+        <div class="sp-meta" style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 3rem; justify-content: center; align-items: center; width: 100%;">
+            <div class="sp-meta-item" style="color: #94a3b8; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-building" style="color: #63b3ed;"></i> Assistance Publique – Hôpitaux de Paris
+            </div>
+            <div class="sp-meta-item" style="color: #94a3b8; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="far fa-calendar-alt" style="color: #63b3ed;"></i> Mai – Juin 2025
+            </div>
+            <div class="sp-meta-item" style="color: #94a3b8; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-map-marker-alt" style="color: #63b3ed;"></i> Paris, France
+            </div>
+        </div>
+
+        <p class="sp-section-title" style="justify-content: center; width: 100%; font-size: 0.9rem; margin-bottom: 2rem;">
+            <i class="fas fa-tasks"></i> Missions réalisées durant le stage
+        </p>
+
+        <p style="color: #94a3b8; font-size: 1rem; line-height: 1.8; margin-bottom: 3rem; max-width: 700px;">
+            Au sein de l'équipe d'automatisation, j'ai suivi un apprentissage durant toute la période de stage. J'ai pu découvrir les différents métiers au sein de la DSI de l'AP-HP.
+
+        <div class="sp-steps" style="width: 100%; max-width: 800px; text-align: left;">
+            <div class="sp-step">
+                <div class="sp-step-num">01</div>
+                <div class="sp-step-content">
+                    <strong>Découverte de Git</strong>
+                    <p>Apprentissage des outils de production et maîtrise de Git.</p>
+                </div>
+            </div>
+            <div class="sp-step">
+                <div class="sp-step-num">02</div>
+                <div class="sp-step-content">
+                    <strong>Développement Web Interne</strong>
+                    <p>Conception et réalisation d'un site web répertoriant l'ensemble des 38 hôpitaux de l'AP-HP.</p>
+                </div>
+            </div>
+            <div class="sp-step">
+                <div class="sp-step-num">03</div>
+                <div class="sp-step-content">
+                    <strong>Infrastructure</strong>
+                    <p>Installation de VMware, déploiement d'une machine virtuelle CentOS.</p>
+                </div>
+            </div>
+            <div class="sp-step">
+                <div class="sp-step-num">04</div>
+                <div class="sp-step-content">
+                    <strong>Apprentissage de l'API REST</strong>
+                    <p>Apprentissage de l'API REST et mise en pratique avec un projet.</p>
+                </div>
+            </div>
+            <div class="sp-step">
+                <div class="sp-step-num">05</div>
+                <div class="sp-step-content">
+                    <strong>Scripts d'automatisation Python</strong>
+                    <p>Développement d'un générateur de rapports météo automatisé.</p>
+                </div>
+            </div>
+        </div>
+
+        <p class="sp-section-title" style="justify-content: center; width: 100%; margin-top: 4rem;">
+            <i class="fas fa-tools"></i> Environnement technique
+        </p>
+        <div class="sp-tech-badges" style="justify-content: center; width: 100%; margin-bottom: 4rem;">
+            <span class="sp-tech-badge"><i class="fab fa-python"></i> Python</span>
+            <span class="sp-tech-badge"><i class="fab fa-git-alt"></i> Git</span>
+            <span class="sp-tech-badge"><i class="fas fa-server"></i> VMware</span>
+            <span class="sp-tech-badge"><i class="fas fa-plug"></i> API REST</span>
+            <span class="sp-tech-badge"><i class="fas fa-code"></i> HTML / CSS</span>
+        </div>
+
+        <div class="sp-download-area" style="width: 100%; display: flex; justify-content: center; padding-top: 3rem; border-top: 1px solid rgba(99,179,237,0.1);">
+            <a href="fichiers/Rapportdestage.pdf" class="sp-dl-btn" download>
+                <i class="fas fa-download"></i> Télécharger le rapport de stage
+            </a>
+        </div>
+    </div>
+</div>
+
+    <div class="stage-panel" id="stagePanel2" role="dialog" aria-modal="true" aria-label="Stage Ikbal Travel">
+    <div class="sp-topbar">
+        <button class="sp-close-btn" onclick="closeStagePanel('stagePanel2')" aria-label="Fermer">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <div class="sp-body" style="padding-top: 3rem; display: flex; flex-direction: column; align-items: center; text-align: center;">
+        
+        <h2 style="font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; color: #fff; margin-bottom: 1rem; margin-top: 0; line-height: 1.2;">
+            Stage de deuxième année<br>BTS SIO option SLAM
+        </h2>
+
+        <div class="sp-meta" style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 3rem; justify-content: center; align-items: center; width: 100%;">
+            <div class="sp-meta-item" style="color: #94a3b8; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-building" style="color: #63b3ed;"></i> Agence Ikbal Travel Services
+            </div>
+            <div class="sp-meta-item" style="color: #94a3b8; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="far fa-calendar-alt" style="color: #63b3ed;"></i> Janvier – Février 2026
+            </div>
+            <div class="sp-meta-item" style="color: #94a3b8; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-map-marker-alt" style="color: #63b3ed;"></i> Sétif, Algérie (À distance)
+            </div>
+        </div>
+
+        <p class="sp-section-title" style="justify-content: center; width: 100%; font-size: 0.9rem; margin-bottom: 2rem;">
+            <i class="fas fa-list-ol"></i> Déroulement du stage – Les 5 étapes
+        </p>
+
+        <p style="color: #94a3b8; font-size: 1rem; line-height: 1.8; margin-bottom: 3rem; max-width: 700px;">
+            J'ai réalisé ce stage à distance pour une agence de voyage. Le but était de leur créer un site web moderne pour qu'ils puissent montrer leurs offres et que les clients puissent faire des recherches de vols.
+        </p>
+
+        <div class="sp-steps" style="width: 100%; max-width: 800px; text-align: left;">
+            <div class="sp-step">
+                <div class="sp-step-num">01</div>
+                <div class="sp-step-content">
+                    <strong>Création de la base de données</strong>
+                    <p>J'ai commencé par réfléchir à toutes les informations à stocker (voyages, prix, descriptions) sur un Cahier des charges. J'ai ensuite créé les tables sur MySQL pour que tout soit bien organisé.</p>
+                </div>
+            </div>
+            <div class="sp-step">
+                <div class="sp-step-num">02</div>
+                <div class="sp-step-content">
+                    <strong>Sécurité et connexion</strong>
+                    <p>J'ai utilisé le système de connexion de Laravel (Breeze) pour que les gens puissent se connecter. L'administrateur de l'agence a accès à un panneau de gestion (Dashboard) protégé que les clients ne peuvent pas voir.</p>
+                </div>
+            </div>
+            <div class="sp-step">
+                <div class="sp-step-num">03</div>
+                <div class="sp-step-content">
+                    <strong>Création du panneau d'administration</strong>
+                    <p>C'est l'interface pour l'agence. Elle permet d'ajouter un nouveau voyage, gérer des devis ou de supprimer une destination directement sur le site sans toucher au code.</p>
+                </div>
+            </div>
+            <div class="sp-step">
+                <div class="sp-step-num">04</div>
+                <div class="sp-step-content">
+                    <strong>Recherche de vols (API Amadeus)</strong>
+                    <p>J'ai connecté l'api afin d'afficher les vrais horaires et les prix des vols en direct pour les clients. Les infos viennent automatiquement de l'api.</p>
+                </div>
+            </div>
+            <div class="sp-step">
+                <div class="sp-step-num">05</div>
+                <div class="sp-step-content">
+                    <strong>Mise en place d'une politique de confidentialité</strong>
+                    <p>J'ai rédigé et mis en place une politique de confidentialité pour protéger les données des utilisateurs et respecter les réglementations du RGPD.</p>
+                </div>
+            </div>
+            <div class="sp-step">
+                <div class="sp-step-num">06</div>
+                <div class="sp-step-content">
+                    <strong>Espace client</strong>
+                    <p>Pour finir, j'ai fait la partie visible par les clients (consultation des offres, formulaire de contact)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="sp-gallery-trigger" style="width: 100%; display: flex; justify-content: center; margin-top: 3rem; margin-bottom: 4rem;">
+            <button class="sp-inner-gallery-btn" onclick="openCarousel('projet3')">
+                <i class="fas fa-images"></i> Voir les captures du projet
+            </button>
+        </div>
+
+        <p class="sp-section-title" style="justify-content: center; width: 100%;">
+            <i class="fas fa-tools"></i> Environnement technique
+        </p>
+        <div class="sp-tech-badges" style="justify-content: center; width: 100%; margin-bottom: 4rem;">
+            <span class="sp-tech-badge"><i class="fab fa-laravel"></i> Laravel</span>
+            <span class="sp-tech-badge"><i class="fab fa-php"></i> PHP</span>
+            <span class="sp-tech-badge"><i class="fas fa-database"></i> MySQL</span>
+            <span class="sp-tech-badge"><i class="fab fa-bootstrap"></i> Bootstrap</span>
+            <span class="sp-tech-badge"><i class="fas fa-plug"></i> API Amadeus</span>
+        </div>
+
+        <p class="sp-section-title" style="justify-content: center; width: 100%;">
+            <i class="fas fa-star"></i> Conclusion
+        </p>
+        <div class="sp-conclusion" style="text-align: center; max-width: 700px; width: 100%; margin-bottom: 4rem;">
+            Ce <strong>très bon stage</strong> m'a permis de mettre mes connaissances en pratique sur un vrai projet. J'ai appris à être autonome en travaillant à distance et j'ai vraiment progressé sur le framework Laravel. Ça m'a montré comment on crée une application utile pour une entreprise.
+        </div>
+
+        <div class="sp-download-area" style="width: 100%; display: flex; justify-content: center; padding-top: 3rem; border-top: 1px solid rgba(99,179,237,0.1);">
+            <a href="fichiers/Compterendustage.pdf" class="sp-dl-btn" download>
+                <i class="fas fa-download"></i> Télécharger le rapport de stage
+            </a>
+        </div>
+    </div>
+</div>
+
+    <!-- CAROUSEL -->
+    <div class="carousel-overlay" id="carouselOverlay">
+        <div class="carousel-header">
+            <div class="carousel-title-block"><h4 id="carouselTitle"></h4><span id="carouselDesc"></span></div>
+            <button class="carousel-close" onclick="closeCarousel()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="carousel-stage">
+            <button class="carousel-arrow prev" id="carouselPrev" onclick="carouselNav(-1)"><i class="fas fa-chevron-left"></i></button>
+            <div class="carousel-img-wrap" id="carouselImgWrap"></div>
+            <button class="carousel-arrow next" id="carouselNext" onclick="carouselNav(1)"><i class="fas fa-chevron-right"></i></button>
+            <div class="carousel-counter" id="carouselCounter"></div>
+        </div>
+        <div class="carousel-thumbs" id="carouselThumbs"></div>
+    </div>
+
+    <script>
+    (function () {
+        'use strict';
+
+        /* ── Scroll progress ── */
+        const progressBar = document.getElementById('scrollProgress');
+        window.addEventListener('scroll', () => {
+            const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+            progressBar.style.width = pct + '%';
+        });
+
+        /* ── Navbar ── */
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 50));
+
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navLinks = document.getElementById('navLinks');
+        mobileToggle?.addEventListener('click', () => navLinks.classList.toggle('active'));
+
+        const sections = document.querySelectorAll('section');
+        const menuLinks = document.querySelectorAll('.nav-links a');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(s => { if (window.scrollY >= s.offsetTop - 300) current = s.id; });
+            menuLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href').substring(1) === current));
+        });
+        menuLinks.forEach(l => l.addEventListener('click', () => navLinks.classList.remove('active')));
+
+        /* ── Reveal on scroll ── */
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    const delay = e.target.style.getPropertyValue('--delay') || '0s';
+                    setTimeout(() => e.target.classList.add('visible'), parseFloat(delay) * 1000);
+                    revealObserver.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right').forEach(el => revealObserver.observe(el));
+
+        /* ── Canvas particules ── */
+        const canvas = document.getElementById('heroCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const resizeCanvas = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.4; this.speedY = (Math.random() - 0.5) * 0.4;
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+            }
+            draw() {
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(99,179,237,${this.opacity})`; ctx.fill();
+            }
+        }
+        for (let i = 0; i < 80; i++) particles.push(new Particle());
+        function connectParticles() {
+            for (let i = 0; i < particles.length; i++) for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 120) {
+                    ctx.strokeStyle = `rgba(99,179,237,${0.15*(1-dist/120)})`; ctx.lineWidth = 0.5;
+                    ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke();
+                }
+            }
+        }
+        (function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            connectParticles(); requestAnimationFrame(animateCanvas);
+        })();
+
+        /* ── Lightbox certifications ── */
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        document.querySelectorAll('.zoomable').forEach(el => el.addEventListener('click', () => {
+            const img = el.querySelector('img');
+            if (img) { lightboxImg.src = img.src; lightbox.classList.add('active'); }
+        }));
+        window.closeLightbox = () => lightbox.classList.remove('active');
+        lightbox.addEventListener('click', e => { if (e.target === lightbox) window.closeLightbox(); });
+
+        /* ── Compteurs stats ── */
+        /* ── Compteurs stats ── */
+        const statObserver = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    const el = e.target;
+                    const text = el.textContent;
+                    const hasPlus = text.includes('+'); // On détecte le +
+                    const target = parseInt(text.replace(/\D/g, '')); // On récupère juste le 10
+                    
+                    let current = 0; const step = target / 30;
+                    const timer = setInterval(() => {
+                        current += step;
+                        if (current >= target) { 
+                            el.textContent = (hasPlus ? '+' : '') + target; // Affiche +10 à la fin
+                            clearInterval(timer); 
+                        }
+                        else {
+                            el.textContent = (hasPlus ? '+' : '') + Math.floor(current); // Anime +1, +2...
+                        }
+                    }, 40);
+                    statObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('.stat-number').forEach(el => statObserver.observe(el));
+
+        /* ── STAGE PANELS – PLEIN ÉCRAN ── */
+        let activePanel = null;
+
+        function openStagePanel(id) {
+            const panel = document.getElementById(id);
+            if (!panel) return;
+            if (activePanel && activePanel !== panel) closeStagePanel(activePanel.id, true);
+
+            panel.style.display = 'flex';
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    panel.classList.add('open');
+                });
+            });
+            panel.scrollTop = 0;
+            document.body.style.overflow = 'hidden';
+            activePanel = panel;
+        }
+
+        function closeStagePanel(id, instant) {
+            const panel = document.getElementById(id);
+            if (!panel) return;
+            panel.classList.remove('open');
+
+            const duration = instant ? 0 : 560;
+            setTimeout(() => {
+                panel.style.display = 'none';
+            }, duration);
+
+            document.body.style.overflow = '';
+            activePanel = null;
+        }
+
+        window.openStageModal = function(id) {
+            const map = { stage1: 'stagePanel1', stage2: 'stagePanel2' };
+            openStagePanel(map[id] || id);
+        };
+        window.closeStageModal = function(id) {
+            const map = { stage1: 'stagePanel1', stage2: 'stagePanel2' };
+            closeStagePanel(map[id] || id);
+        };
+        window.openStagePanel  = openStagePanel;
+        window.closeStagePanel = closeStagePanel;
+
+        /* ── CAROUSEL PROJETS ── */
+        const projets = {
+            projet1: { title: "Site E-Commerce", desc: "Boutique en ligne – confiserie", photos: ["projetbonbons/image1.png","projetbonbons/image2.png","projetbonbons/image3.png","projetbonbons/image4.png"] },
+            projet2: { title: "Site web intranet", desc: "Application de gestion interne", photos: ['photosMission3/Image1.png','photosMission3/Image2.png','photosMission3/Image3.png','photosMission3/Image4.png','photosMission3/Image5.png','photosMission3/Image6.png'] },
+            projet3: { title: "Site Agence de Voyage", desc: "Ikbal Travel Services", photos: ["photosprojet/image7.png","photosprojet/image8.png","photosprojet/image9.png","photosprojet/image10.png","photosprojet/image.png","photosprojet/image2.png","photosprojet/image11.png","photosprojet/image3.png","photosprojet/image4.png","photosprojet/image5.png","photosprojet/image6.png","photosprojet/image12.png","photosprojet/image13.png","photosprojet/image14.png"] },
+            projet4: { title: "Interface Graphique C#", desc: "Application de gestion de données", photos: ["photosMission2/Image1.png","photosMission2/Image2.png","photosMission2/Image3.png","photosMission2/Image4.png"] },
+            projet5: { title: "Projet Mobile Bibliothèque", desc: "Application mobile", photos: ["photosMission4/Image1.png","photosMission4/Image2.png","photosMission4/Image3.png","photosMission4/Image4.png"] }
+        };
+        let cPhotos = [], cIndex = 0;
+        const overlay    = document.getElementById('carouselOverlay');
+        const imgWrap    = document.getElementById('carouselImgWrap');
+        const thumbsEl   = document.getElementById('carouselThumbs');
+        const counterEl  = document.getElementById('carouselCounter');
+        const prevBtn    = document.getElementById('carouselPrev');
+        const nextBtn    = document.getElementById('carouselNext');
+
+        function getImg() { return document.getElementById('carouselImg'); }
+        function syncUI() {
+            counterEl.textContent = cPhotos.length ? `${cIndex + 1} / ${cPhotos.length}` : '';
+            thumbsEl.querySelectorAll('.carousel-thumb').forEach((t, i) => t.classList.toggle('active', i === cIndex));
+            const solo = cPhotos.length <= 1; prevBtn.disabled = solo; nextBtn.disabled = solo;
+        }
+        function buildThumbs() {
+            thumbsEl.innerHTML = '';
+            cPhotos.forEach((src, i) => {
+                const div = document.createElement('div');
+                div.className = 'carousel-thumb' + (i === 0 ? ' active' : '');
+                div.innerHTML = `<img src="${src}" alt="thumb ${i+1}" loading="lazy">`;
+                div.addEventListener('click', () => goTo(i));
+                thumbsEl.appendChild(div);
+            });
+        }
+        function goTo(index, animate) {
+            cIndex = (index + cPhotos.length) % cPhotos.length;
+            const img = getImg(); if (!img) return;
+            if (animate) {
+                img.classList.add('fade-out');
+                setTimeout(() => { img.src = cPhotos[cIndex]; img.classList.remove('fade-out'); syncUI(); }, 220);
+            } else { img.src = cPhotos[cIndex]; syncUI(); }
+        }
+        window.openCarousel = function(id) {
+            const p = projets[id]; if (!p) return;
+            document.getElementById('carouselTitle').textContent = p.title;
+            document.getElementById('carouselDesc').textContent = p.desc;
+            cPhotos = p.photos; cIndex = 0;
+            imgWrap.innerHTML = ''; thumbsEl.innerHTML = '';
+            if (!cPhotos.length) {
+                imgWrap.innerHTML = `<div class="carousel-empty"><i class="fas fa-camera"></i><p>Les captures seront bientôt ajoutées.</p></div>`;
+                counterEl.textContent = ''; prevBtn.style.display = 'none'; nextBtn.style.display = 'none';
+            } else {
+                imgWrap.innerHTML = '<img id="carouselImg" src="" alt="Photo projet">';
+                prevBtn.style.display = ''; nextBtn.style.display = '';
+                buildThumbs(); getImg().src = cPhotos[0]; syncUI();
+            }
+            overlay.classList.add('open'); document.body.style.overflow = 'hidden';
+        };
+        window.closeCarousel = function() { overlay.classList.remove('open'); document.body.style.overflow = ''; };
+        window.carouselNav = function(dir) { if (!cPhotos.length) return; goTo(cIndex + dir, true); };
+        overlay.addEventListener('click', e => { if (e.target === overlay) window.closeCarousel(); });
+
+        let touchStartX = 0;
+        overlay.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+        overlay.addEventListener('touchend', e => {
+            const diff = touchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) window.carouselNav(diff > 0 ? 1 : -1);
+        });
+
+        /* ── Escape global ── */
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                window.closeCarousel();
+                if (activePanel) closeStagePanel(activePanel.id);
+                window.closeLightbox();
+            }
+            if (overlay.classList.contains('open')) {
+                if (e.key === 'ArrowRight') window.carouselNav(1);
+                if (e.key === 'ArrowLeft')  window.carouselNav(-1);
+            }
+        });
+
+    })();
+    </script>
+</body>
+</html>
